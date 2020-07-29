@@ -16,6 +16,10 @@ from contextlib import contextmanager
 DBNAME = "HomeInventory"
 
 
+def scrub(text):
+    return "".join([chr for chr in text if chr.isalnum()])
+
+
 def create_room():
     pass
 
@@ -45,9 +49,9 @@ def main_menu():
         print("\n")
         for item, description in sorted(menu.items()):
             print(f"{item}) {description}")
-        print("\n")
+        print()
 
-        choice = input("Please chose an action > ")    # add scrub function
+        choice = scrub(input("Please chose an action > "))
         if choice == "1":
             create_room()
         elif choice == "2":
@@ -59,7 +63,7 @@ def main_menu():
         elif choice == "5":
             sys.exit()
         else:
-            print("Invalid input. Please try again!")
+            print("\n=== Invalid input. Please try again! ===\n")
 
 
 main_menu()
