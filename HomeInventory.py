@@ -60,9 +60,9 @@ def main_menu():
         if choice == "1":
             create_room()
         elif choice == "2":
-            create_inventory()
+            create_inventory(select_room())
         elif choice == "3":
-            show_inventory()
+            show_inventory(select_room())
         elif choice == "4":
             show_value()
         elif choice == "5":
@@ -71,16 +71,45 @@ def main_menu():
             print("\n=== Invalid input. Please try again! ===\n")
 
 
+def room_list():
+    rooms = list()
+    with access_db() as cursor:
+        cursor.execute("SELECT name from sqlite_master WHERE type='table'")
+        for room in cursor:
+            rooms.append(room[0])
+    return rooms
+
+
+def select_room():
+    while True:
+        print("\n")
+        for room in room_list():
+            print(room)
+        selection = input("\nPlease select a room: ").lower()
+        if selection not in room_list():
+            print(f"Room does not exist: {selection}")
+        else:
+            return scrub(selection)
+
+
 def create_room():
     name = input("\nWhat name would you like to give the room? > ")
     name = scrub(name)
     with access_db() as cursor:
         cursor.execute("CREATE TABLE '" + name.lower() + "' (Item TEXT, Value REAL)")
-    print(f"\nA room with name {name} has been added to the database.\n")
+    print(f"\nA room with name '{name}' has been added to the database.\n")
 
 
-def create_inventory():
-    pass
+def create_inventory(room):
+    while True:
+        item = scrub(input("Please specify item name > "))
+        value = int(input("Please specify item value > "))
+        with access_db() as cursor:
+            cursor.execute("INSERT INTO '" + room + "' VALUES(?,?)", (item, value))
+
+        continue = input("\nWould you like to add another item or (q)uit? > ")
+        if coninue.lower() == "q":
+            break
 
 
 def show_inventory():
